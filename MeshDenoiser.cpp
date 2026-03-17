@@ -107,17 +107,33 @@ bool write_default_options_file(const std::string &path)
 	return out.good();
 }
 
+void apply_default_options(SDFilter::MeshDenoisingParameters &param)
+{
+	param.lambda = 0.25;
+	param.eta = 2.8;
+	param.mu = 0.25;
+	param.nu = 0.3;
+	param.mesh_update_closeness_weight = 0.001;
+	param.mesh_update_iter = 5;
+	param.mesh_update_disp_eps = 1e-1;
+	param.outer_iterations = 2;
+	param.deterministic_mode = false;
+	param.linear_solver_type = static_cast<SDFilter::Parameters::LinearSolverType>(SDFilter::DEFAULT_LINEAR_SOLVER_TYPE);
+}
+
 void print_help(const char *exe_name)
 {
 	std::cout << "MeshDenoiser.exe" << std::endl;
 	std::cout << std::endl;
 	std::cout << "Usage:" << std::endl;
+	std::cout << "  " << exe_name << " INPUT_MESH OUTPUT_MESH [optional flags]" << std::endl;
 	std::cout << "  " << exe_name << " OPTION_FILE INPUT_MESH OUTPUT_MESH [optional flags]" << std::endl;
 	std::cout << "  " << exe_name << " --write-default-options PATH" << std::endl;
 	std::cout << "  " << exe_name << " --help" << std::endl;
 	std::cout << std::endl;
-	std::cout << "Required positional arguments:" << std::endl;
-	std::cout << "  OPTION_FILE               Required. Path to the denoising options text file." << std::endl;
+	std::cout << "Positional arguments:" << std::endl;
+	std::cout << "  OPTION_FILE               Optional. Path to the denoising options text file." << std::endl;
+	std::cout << "                            If omitted, built-in defaults are used." << std::endl;
 	std::cout << "  INPUT_MESH                Required. Input ASCII OBJ mesh to denoise." << std::endl;
 	std::cout << "  OUTPUT_MESH               Required. Output ASCII OBJ mesh path." << std::endl;
 	std::cout << std::endl;
@@ -171,12 +187,49 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	int positional_argc = 0;
+	for(int i = 1; i < argc; ++i)
+	{
+		const std::string arg = argv[i];
+		if(arg.rfind("--", 0) == 0){
+			break;
+		}
+		++positional_argc;
+	}
+
+	if(positional_argc != 2 && positional_argc != 3)
+	{
+		print_help(argv[0]);
+		return 1;
+	}
+
+	std::string options_path;
+	std::string input_mesh_path;
+	std::string output_mesh_path;
+	int flag_index = 1;
+	bool using_builtin_defaults = false;
+
+	if(positional_argc == 2)
+	{
+		using_builtin_defaults = true;
+		input_mesh_path = argv[1];
+		output_mesh_path = argv[2];
+		flag_index = 3;
+	}
+	else
+	{
+		options_path = argv[1];
+		input_mesh_path = argv[2];
+		output_mesh_path = argv[3];
+		flag_index = 4;
+	}
+
 	int obj_export_precision = 16;
 	std::string metrics_json_path;
 	std::string metrics_csv_path;
 	bool deterministic_cli = false;
 
-	for(int i = 4; i < argc; ++i)
+	for(int i = flag_index; i < argc; ++i)
 	{
 		std::string arg = argv[i];
 		if(arg == "--obj-export-precision" && i + 1 < argc){
@@ -202,9 +255,9 @@ int main(int argc, char **argv)
 
 	TriMesh mesh;
 	auto import_begin = Clock::now();
-    if(!SDFilter::read_mesh(mesh, argv[2]))
+    if(!SDFilter::read_mesh(mesh, input_mesh_path.c_str()))
     {
-    	std::cerr << "Error: unable to read input mesh from the file " << argv[2] << std::endl;
+    	std::cerr << "Error: unable to read input mesh from the file " << input_mesh_path << std::endl;
     	return 1;
     }
 	auto import_end = Clock::now();
@@ -215,10 +268,15 @@ int main(int argc, char **argv)
 
     // Load option file
     SDFilter::MeshDenoisingParameters param;
-    if(!param.load(argv[1])){
-    	std::cerr << "Error: unable to load option file " << argv[1] << std::endl;
-    	return 1;
-    }
+	if(using_builtin_defaults)
+	{
+		apply_default_options(param);
+		std::cout << "No option file specified; using built-in default denoising options." << std::endl;
+	}
+	else if(!param.load(options_path.c_str())){
+		std::cerr << "Error: unable to load option file " << options_path << std::endl;
+		return 1;
+	}
     if(!param.valid_parameters()){
     	std::cerr << "Invalid filter options. Aborting..." << std::endl;
     	return 1;
@@ -253,8 +311,8 @@ int main(int argc, char **argv)
 
     // Save output mesh
 	auto export_begin = Clock::now();
-	if(!SDFilter::write_mesh(output_mesh, argv[3], obj_export_precision)){
-		std::cerr << "Error: unable to save the result mesh to file " << argv[3] << std::endl;
+	if(!SDFilter::write_mesh(output_mesh, output_mesh_path.c_str(), obj_export_precision)){
+		std::cerr << "Error: unable to save the result mesh to file " << output_mesh_path << std::endl;
 		return 1;
 	}
 	auto export_end = Clock::now();

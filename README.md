@@ -42,8 +42,12 @@ Dependency notes:
 2. Usage
 
 ```text
+MeshDenoiser INPUT_MESH OUTPUT_MESH
 MeshDenoiser OPTION_FILE INPUT_MESH OUTPUT_MESH
 ```
+
+If `OPTION_FILE` is omitted, the executable uses the same built-in defaults that
+`--write-default-options` writes to disk.
 
 Optional CLI flags:
 
