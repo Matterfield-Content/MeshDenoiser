@@ -87,8 +87,22 @@ target_include_directories(rapidobj INTERFACE "${rapidobj_SOURCE_DIR}/include")
 
 # OpenMesh library
 set(OPENMESH_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/OpenMesh")
-file(GLOB_RECURSE OPENMESH_HEADERS "${OPENMESH_SOURCE_DIR}/Core/*.hh" "${OPENMESH_SOURCE_DIR}/Core/*.h")
-file(GLOB_RECURSE OPENMESH_SOURCES "${OPENMESH_SOURCE_DIR}/Core/*.cc")
+file(GLOB_RECURSE OPENMESH_HEADERS
+  "${OPENMESH_SOURCE_DIR}/Core/Geometry/*.hh"
+  "${OPENMESH_SOURCE_DIR}/Core/Geometry/*.h"
+  "${OPENMESH_SOURCE_DIR}/Core/Mesh/*.hh"
+  "${OPENMESH_SOURCE_DIR}/Core/Mesh/*.h"
+  "${OPENMESH_SOURCE_DIR}/Core/System/*.hh"
+  "${OPENMESH_SOURCE_DIR}/Core/System/*.h"
+  "${OPENMESH_SOURCE_DIR}/Core/Utils/*.hh"
+  "${OPENMESH_SOURCE_DIR}/Core/Utils/*.h"
+)
+file(GLOB_RECURSE OPENMESH_SOURCES
+  "${OPENMESH_SOURCE_DIR}/Core/Geometry/*.cc"
+  "${OPENMESH_SOURCE_DIR}/Core/Mesh/*.cc"
+  "${OPENMESH_SOURCE_DIR}/Core/System/*.cc"
+  "${OPENMESH_SOURCE_DIR}/Core/Utils/*.cc"
+)
 add_library(OpenMesh STATIC ${OPENMESH_HEADERS} ${OPENMESH_SOURCES})
 target_include_directories(OpenMesh PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/external")
 

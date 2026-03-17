@@ -56,6 +56,36 @@ foreach ($pattern in $runtimeDllPatterns) {
         ForEach-Object { Copy-Item -Path $_.FullName -Destination $binDir -Force }
 }
 
+# Bundle MSVC/OpenMP redistributables when available so the package is closer to self-contained.
+$redistRoots = @(
+    "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Redist\MSVC",
+    "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC",
+    "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
+)
+$redistDlls = @(
+    "msvcp140.dll",
+    "vcruntime140.dll",
+    "vcruntime140_1.dll",
+    "vcomp140.dll"
+)
+foreach ($dll in $redistDlls) {
+    foreach ($root in $redistRoots) {
+        if (-not (Test-Path $root)) {
+            continue
+        }
+
+        $src = Get-ChildItem -Path $root -Recurse -File -Filter $dll -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -like "*\x64\*" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+        if ($src) {
+            Copy-Item -Path $src.FullName -Destination $binDir -Force
+            break
+        }
+    }
+}
+
 # Default option files
 $defaultConfigFiles = @(
     "DenoisingOptions.txt"
@@ -113,5 +143,12 @@ Get-ChildItem -Path $outDirAbs -Recurse -File |
 
 $manifestLines | Set-Content -Path $manifestPath -Encoding ASCII
 
+$zipPath = Join-Path (Split-Path -Parent $outDirAbs) "MeshDenoiser-release.zip"
+if (Test-Path $zipPath) {
+    Remove-Item -Path $zipPath -Force
+}
+Compress-Archive -Path (Join-Path $outDirAbs "*") -DestinationPath $zipPath -CompressionLevel Optimal
+
 Write-Host "Release package created at: $outDirAbs"
 Write-Host "Manifest: $manifestPath"
+Write-Host "Zip archive: $zipPath"
