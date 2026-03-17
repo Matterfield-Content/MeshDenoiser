@@ -1,0 +1,20 @@
+name: perf-smoke
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build-vcpkg -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build-vcpkg --config Release --target MeshDenoiser --parallel
+
+      - name: Perf smoke
+        run: python tools/perf_smoke.py

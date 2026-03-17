@@ -1,0 +1,10 @@
+Lambda  2
+Eta 1.5
+Mu  1.5
+Nu  0.3
+MeshUpdateClosenessWeight  0.001
+MeshUpdateIterations  20
+OuterIterations   5
+LinearSolverType 0
+LinearSolverMaxIterations 500
+LinearSolverTolerance 1e-6

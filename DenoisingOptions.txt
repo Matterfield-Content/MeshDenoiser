@@ -1,0 +1,32 @@
+#### Option file for SD filter based mesh denoising
+#### Lines starting with '#' are comments
+
+## Regularization weight, must be positive.
+Lambda  0.25
+
+## Gaussian standard deviation for spatial weight, scaled by the average distance between adjacent face cetroids. Must be positive.
+Eta 2.8
+
+## Gaussian standard deviation for guidance weight, must be positive.
+Mu  0.25
+
+## Gaussian standard deviation for signal weight, must be positive
+Nu  0.3
+
+## Closeness weight for mesh update, must be positive
+MeshUpdateClosenessWeight  0.001
+
+## Iterations for mesh update, must be positive
+MeshUpdateIterations  5
+
+## Early-stop threshold for per-iteration mesh update RMS displacement (<=0 disables)
+MeshUpdateDisplacementEps 1e-1
+
+## Outer iteration for denoising, must be positive integers
+OuterIterations   2
+
+## Force deterministic mode (single-threaded runtime) for reproducible outputs (0/1)
+DeterministicMode 0
+
+## Linear solver backend: 0=CG, 1=Eigen LDLT, 2=CHOLMOD (falls back to 1 if unavailable)
+LinearSolverType 2

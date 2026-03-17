@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "small_manifold",
+      "category": "small",
+      "topology": "manifold",
+      "input_mesh": "TestData/small_manifold.obj",
+      "options_file": "DenoisingOptions.txt",
+      "mode": "denoise",
+      "required": true
+    },
+    {
+      "name": "small_nonmanifold",
+      "category": "small",
+      "topology": "non_manifold",
+      "input_mesh": "TestData/small_nonmanifold.obj",
+      "options_file": "DenoisingOptions.txt",
+      "mode": "denoise",
+      "required": true,
+      "expect_failure": true
+    },
+    {
+      "name": "medium_nonmanifold",
+      "category": "medium",
+      "topology": "non_manifold",
+      "input_mesh": "TestData/noisy.obj",
+      "options_file": "DenoisingOptions.txt",
+      "mode": "denoise",
+      "required": false
+    },
+    {
+      "name": "large_manifold",
+      "category": "large",
+      "topology": "manifold",
+      "input_mesh": "TestData/large_manifold.obj",
+      "options_file": "DenoisingOptions.txt",
+      "mode": "denoise",
+      "required": false
+    }
+  ]
+}

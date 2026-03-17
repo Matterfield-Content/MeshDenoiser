@@ -1,0 +1,54 @@
+# Build trees
+build/
+build-cuda/
+build-cuda-custom/
+build-cuda-vs/
+build-vcpkg/
+
+# Packaged output
+dist/
+
+# CMake and IDE artifacts outside build folders
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.dir/
+*.obj
+*.recipe
+*.tlog
+*.pdb
+*.ilk
+*.idb
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Benchmark outputs
+benchmarks/results/
+benchmarks/results_m2/
+benchmarks/results_m3/
+benchmarks/results_m4/
+benchmarks/results_m4_gpu_reporting/
+benchmarks/results_m4_observability/
+benchmarks/results_m5/
+
+# Generated test meshes and local experiment outputs
+!TestData/
+!TestData/Denoising_AliceVision.txt
+!TestData/DenoisingOptions_*.txt
+!TestData/noisy.obj
+!TestData/small_manifold.obj
+!TestData/small_nonmanifold.obj
+TestData/beerstein_working.obj
+TestData/*_denoised*.obj
+TestData/*_filtered*.obj
+TestData/*_roundtrip*.obj
+TestData/*_smoke_output.obj
+TestData/*_earlystop.obj
+TestData/*_m6_det.obj

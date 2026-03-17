@@ -1,0 +1,35 @@
+Info: Program called with the following parameters:
+Info:  * denoisingIterations = 1
+Info:  * eta = 2.8
+Info:  * input = "D:\VENVs\MeshSDFilter-master\TestData\noisy.obj"
+Info:  * lambda = 0.25
+Info:  * maxCoresAvailable =  Unknown Type "unsigned int" (default)
+Info:  * maxMemoryAvailable = 18446744073709551615 (default)
+Info:  * meshUpdateClosenessWeight = 0.001 (default)
+Info:  * meshUpdateMethod = 0 (default)
+Info:  * mu = 0.25
+Info:  * nu = 0.3
+Info:  * output = "D:\VENVs\MeshSDFilter-master\TestData\noisy_denoised.obj"
+Info:  * verboseLevel = "info"
+Info:
+Info: Hardware :
+Info:   Detected core count : 32
+Info:   OpenMP will use 32 cores
+Info:   Detected available memory : 84936 Mo
+Info:
+Info:
+Info: ====== Filter parameters =========
+Info: Lambda: 0.25
+Info: Eta:2.8
+Info: Mu:0.25
+Info: Nu:0.3
+Info: Mesh denoising outer iterations: 1
+Info: ==================================
+Info:
+Info: Denoising started
+Info: Outer iteration 1...
+Info: Preprocessing......
+Info: Filtering......
+Info: Solver converged after 5 iterations
+Info: Starting iterative mesh update......
+Info: Denoising completed, timing: 55.454
