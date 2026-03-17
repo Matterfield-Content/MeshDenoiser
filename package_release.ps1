@@ -99,7 +99,7 @@ foreach ($cfg in $defaultConfigFiles) {
 
 # Documentation and licenses
 $docFiles = @(
-    "README",
+    "README.md",
     "LICENSE",
     "TUNING_GUIDE.md",
     "MIGRATION_GUIDE.md"

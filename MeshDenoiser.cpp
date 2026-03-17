@@ -57,14 +57,117 @@ void configure_deterministic_runtime(bool deterministic)
 #endif
 	Eigen::setNbThreads(1);
 }
+
+const char* default_options_text()
+{
+	return
+R"(#### Option file for SD filter based mesh denoising
+#### Lines starting with '#' are comments
+
+## Regularization weight, must be positive.
+Lambda  0.25
+
+## Gaussian standard deviation for spatial weight, scaled by the average distance between adjacent face cetroids. Must be positive.
+Eta 2.8
+
+## Gaussian standard deviation for guidance weight, must be positive.
+Mu  0.25
+
+## Gaussian standard deviation for signal weight, must be positive
+Nu  0.3
+
+## Closeness weight for mesh update, must be positive
+MeshUpdateClosenessWeight  0.001
+
+## Iterations for mesh update, must be positive
+MeshUpdateIterations  5
+
+## Early-stop threshold for per-iteration mesh update RMS displacement (<=0 disables)
+MeshUpdateDisplacementEps 1e-1
+
+## Outer iteration for denoising, must be positive integers
+OuterIterations   2
+
+## Force deterministic mode (single-threaded runtime) for reproducible outputs (0/1)
+DeterministicMode 0
+
+## Linear solver backend: 0=CG, 1=Eigen LDLT, 2=CHOLMOD (falls back to 1 if unavailable)
+LinearSolverType 2
+)";
+}
+
+bool write_default_options_file(const std::string &path)
+{
+	std::ofstream out(path.c_str(), std::ios::out | std::ios::trunc);
+	if(!out.is_open()){
+		return false;
+	}
+
+	out << default_options_text();
+	return out.good();
+}
+
+void print_help(const char *exe_name)
+{
+	std::cout << "MeshDenoiser.exe" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Usage:" << std::endl;
+	std::cout << "  " << exe_name << " OPTION_FILE INPUT_MESH OUTPUT_MESH [optional flags]" << std::endl;
+	std::cout << "  " << exe_name << " --write-default-options PATH" << std::endl;
+	std::cout << "  " << exe_name << " --help" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Required positional arguments:" << std::endl;
+	std::cout << "  OPTION_FILE               Required. Path to the denoising options text file." << std::endl;
+	std::cout << "  INPUT_MESH                Required. Input ASCII OBJ mesh to denoise." << std::endl;
+	std::cout << "  OUTPUT_MESH               Required. Output ASCII OBJ mesh path." << std::endl;
+	std::cout << std::endl;
+	std::cout << "Optional flags:" << std::endl;
+	std::cout << "  --obj-export-precision N  Optional. OBJ vertex float precision. Default: 16." << std::endl;
+	std::cout << "  --metrics-json PATH       Optional. Write JSON timing and solver metrics." << std::endl;
+	std::cout << "  --metrics-csv PATH        Optional. Append CSV timing and solver metrics." << std::endl;
+	std::cout << "  --deterministic           Optional. Force deterministic single-threaded runtime." << std::endl;
+	std::cout << "  --write-default-options PATH" << std::endl;
+	std::cout << "                            Optional standalone command. Writes the default" << std::endl;
+	std::cout << "                            options template to PATH and exits." << std::endl;
+	std::cout << "  --help                    Optional. Show this help text and exit." << std::endl;
+}
 }
 
 int main(int argc, char **argv)
 {
+	if(argc == 1)
+	{
+		print_help(argv[0]);
+		return 0;
+	}
+
+	if(argc == 2)
+	{
+		const std::string arg = argv[1];
+		if(arg == "--help" || arg == "-h"){
+			print_help(argv[0]);
+			return 0;
+		}
+	}
+
+	if(argc == 3)
+	{
+		const std::string arg = argv[1];
+		if(arg == "--write-default-options")
+		{
+			if(!write_default_options_file(argv[2])){
+				std::cerr << "Error: unable to write default options file " << argv[2] << std::endl;
+				return 1;
+			}
+
+			std::cout << "Wrote default options to " << argv[2] << std::endl;
+			return 0;
+		}
+	}
+
 	if(argc < 4)
 	{
-		std::cout << "Usage:	MeshDenoiser  OPTION_FILE  INPUT_MESH  OUTPUT_MESH "
-			<< "[--obj-export-precision N] [--metrics-json PATH] [--metrics-csv PATH] [--deterministic]" << std::endl;
+		print_help(argv[0]);
 		return 1;
 	}
 

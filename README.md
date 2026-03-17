@@ -47,6 +47,7 @@ MeshDenoiser OPTION_FILE INPUT_MESH OUTPUT_MESH
 
 Optional CLI flags:
 
+- `--write-default-options PATH`
 - `--obj-export-precision N`
 - `--metrics-json PATH`
 - `--metrics-csv PATH`
@@ -55,6 +56,12 @@ Optional CLI flags:
 Option-file notes:
 
 - Use `DenoisingOptions.txt` as the default template.
+- Or generate a fresh copy with:
+
+```powershell
+MeshDenoiser.exe --write-default-options my_options.txt
+```
+
 - Supported solver/runtime tuning includes:
   - `DeterministicMode`
   - `LinearSolverType`

@@ -9,6 +9,7 @@
 ## CLI Changes
 - Current shipped CLI:
   - `MeshDenoiser OPTION_FILE INPUT_MESH OUTPUT_MESH`
+  - `MeshDenoiser --write-default-options PATH`
 - Supported optional flags:
   - `--obj-export-precision N`
   - `--metrics-json PATH`
